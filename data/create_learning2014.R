@@ -1,0 +1,1 @@
+#Lona van Delden, 6/11/2019, script for exercise 2
