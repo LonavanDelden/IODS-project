@@ -36,7 +36,7 @@ my_model <- lm(points ~ attitude + stra + surf, data = students2014)
 summary(my_model)
 ```
 
-# Fitted model
+# 4. Fitted model
 
 Based on the outcome of the first model, 'stra' and 'surf' will now be excluded from the model. The estimated outcome has changed a little and the standard error has decreased.The multiple R-squared of 0.2 indicates a weak (but highly significant) positive relationship. This means that a change in attitude has a weak effect on the Points, meaning increases the points a little when increasing itself.
 
@@ -46,7 +46,7 @@ my_model2 <- lm(points ~ attitude, data = students2014)
 summary(my_model2)
 ```
 
-# Diagnostic plots
+# 5. Diagnostic plots
 
 The model assumes that the data are normally distributed and the relationshsip between the variables is linear. The following diagnostic plots can be used to check on the validity of these assumtions. The 'Residuals vs Fitted' plot is indicating that the relationship is linear by showing a mostly horizontal line, but could be improved with e.g. higher sample size or additional variables in the model. The 'Normal Q-Q' plot is also mostly supporting the assumptions of normal distribution by alligning the data along the line. The 'Residuals vs Leverage' shows that there are a few outliers but not extremly influencial. Overall, the diagnostic plots indicate that the assumptions of the model are valid.
 
