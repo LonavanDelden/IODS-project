@@ -50,7 +50,7 @@ g2 + geom_bar() + facet_wrap("sex")
 glimpse(alc)
 
 #write the modified data set as .csv file into the data folder
-setwd("C:/Users/lonav/Documents/IODS-project/data")
+setwd("C:/Users/lonav/Documents/IODS-project")
 #install.packages("openxlsx")
 library(openxlsx)
 write.table(alc, file = "alc.csv", append = FALSE, quote = TRUE, sep = ",",

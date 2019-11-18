@@ -1,34 +1,113 @@
----
-title: "chapter3"
-output: html_document
----
+# Logistic regression
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+Starting the chapter 3 exercise by ensuring the right working directory and reading in the created data set from the data wrangling exercise and print the variable names. My data set was saved as 'alc.csv'. The data set includes 382 observations with 35 variables. The observations are from Portuguese students which now will be analysed for their alcohol consumption and to identify which variables are related factors. The variables in question are listed below in the column names, with emphasis on the computed alcohol use "alc_use", which is the avergae of daily and weekly alcohol consumption '(Dalc+Walc)/2'. If this use is higher than 2 than the logical factor "high_use" appears TRUE. This high alcohol usage will be the target variable for the exercise.
+
+```{r alc}
+getwd()
+setwd("C:/Users/lonav/Documents/IODS-project")
+library(openxlsx)
+alc <- read.csv("alc.csv", sep = ",", header = TRUE)
+library(dplyr)
+colnames(alc)
+glimpse(alc)
 ```
 
-## R Markdown
+# Most interesting variables
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+The variables failures, absences, sex and age are choosen as predictors. The hypotheses are that failures, absences and age increase with alcohol consumption. Due to popular consensus women will have less high alcohol usage than men.
+Findings: Failures, absences and sex were significant predictors. Age, on the other hand, showed no significant influence on high alcohol usage. Therefore, the hypothesis that failures and absences increase with high alcohol usage can be confirmed but for the impact of age is no confidence. The boxplot and cross table highlight the lower alcohol usage by women compared to men, which confirms the hypothesis.
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+Numerical exploration with the logistic regression mnodel: 
 
-```{r cars}
-summary(cars)
-```
-
-## Including Plots
-
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
-
-# Regression and model validation
-
-before kniting
+```{r variables}
 library(GGally)
 library(ggplot2)
+m <- glm(high_use ~ failures + absences + sex + age, data = alc, family = "binomial")
+summary(m)
+```
+
+Graphical exploration:
+
+- boxplots
+
+```{r boxplots}
+library(ggplot2)
+g1 <- ggplot(alc, aes(x = high_use, y = absences, col = sex))
+g1 + geom_boxplot() + ylab("absences") + ggtitle("Student absences by alcohol consumption and sex")
+g2 <- ggplot(alc, aes(x = high_use, y = age, col = sex))
+g2 + geom_boxplot() + ylab("age") + ggtitle("Student age by alcohol consumption and sex")
+```
+
+- cross table
+
+```{r table}
+select(alc, high_use, failures, absences, sex, age) %>% tail(10)
+table(high_use = alc$high_use, failures = alc$failures)
+table(high_use = alc$high_use, absences = alc$absences)
+table(high_use = alc$high_use, sex = alc$sex)
+table(high_use = alc$high_use, age = alc$age)
+```
+
+# Fitted model and odds ratios
+
+The model was adjusted based on the insignificant influence of the age variable (see the insignificant ANOVA output at the bottom of the next window), which increases the significance level of the other variables. The remaining three variables are positively correlated to alcohol usage. 
+
+```{r model}
+m1 <- glm(high_use ~ failures + absences + sex + age, data = alc, family = "binomial")
+summary(m1)
+m2 <- glm(high_use ~ failures + absences + sex, data = alc, family = "binomial")
+summary(m2)
+anova(m1, m2, test="LRT")
+```
+
+Odds ratios and their confidence interval are explored:
+
+The odds are that with high alcohol usage it is 2.7 times more likely that the student is a man, 1.5 times more likely that the student fails and 1.1 times more likely to be absent. This outcome shows that sex is the strongest predictor of high alcohol usage. The confidence interval indicates the prediction range of the computed mean, i.e. we are up to 97.5% confident that the odds of the student with high alcohol usage is a man lie between 1.6 and 4.4 times.
+
+```{r odds}
+m <- glm(high_use ~ failures + absences + sex, data = alc, family = "binomial")
+OR <- coef(m) %>% exp
+CI <- confint(m) %>% exp
+cbind(OR, CI)
+```
+
+Predictions computed and visualized by a 2x2 cross tabulation: The predictions were 284 times correct (FALSE=FALSE & TRUE=TRUE) and 98 times incorrect (FALSE=TRUE), i.e. more than a third of the predictions did not match the observations.
+
+```{r predictions}
+probabilities <- predict(m, type = "response")
+alc <- mutate(alc, probability = probabilities)
+alc <- mutate(alc, prediction = probability > 0.5)
+select(alc, failures, absences, sex, high_use, probability, prediction) %>% tail(10)
+table(high_use = alc$high_use, prediction = alc$prediction)
+```
+
+```{r predictions}
+library(dplyr)
+library(ggplot2)
+g <- ggplot(alc, aes(x = probability, y = high_use, col = prediction))
+g + geom_point()
+table(high_use = alc$high_use, prediction = alc$prediction) %>% prop.table %>% addmargins
+```
+
+The training error & cross-validation:
+
+The training error indicates the average number of wrong predictions of about 26%. After 10-fold cross-validation, my model error decresed a notch to 25%. with Depending on the scientific field (I am from environmental science) this is quite high and could indicate missing variables with high influence. However, when it comes to my hypotheses, the model clearly proofed me wrong about age being an influencial variable in this data set.  Age might become a significant factor if the observations would range throughout the whole lifetime (bigger data set). I would still guess that student in their 40s are less likely to correlate with high alcohol consumption but there are no observations in this data set on this. But the other 3 hypotheses were confirmed, sometime even statistics support logical thinking :)
+
+```{r error}
+loss_func <- function(class, prob) {
+  n_wrong <- abs(class - prob) > 0.5
+  mean(n_wrong)
+}
+loss_func(class = alc$high_use, prob = alc$probability)
+library(boot)
+cv <- cv.glm(data = alc, cost = loss_func, glmfit = m, K = nrow(alc))
+cv$delta[1]
+cv <- cv.glm(data = alc, cost = loss_func, glmfit = m, K = 10)
+cv$delta[1]
+```
+
+
+before kniting:
+library(GGally)
+library(ggplot2)
+
