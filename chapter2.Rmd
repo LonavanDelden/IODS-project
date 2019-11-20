@@ -1,11 +1,11 @@
-# Regression and model validation
+# 2. Regression and model validation
 
 Starting the chapter 2 exercise by ensuring the right working directory and reading in the created data set from the data wrangling exercise. My data set was saved as 'learning2014_1.csv'.
 
 ```{r readdata, echo=TRUE,results='hide',message=FALSE,warning=FALSE}
 ```
 
-# 1. Exploring the data
+- Exploring the data
 
 Reading the data as 'student2014' including 7 variables in 7 columns and 166 observations overall. The first column 'gender' is the factor used to categorize the observations in the following statistical analysis. 
 
@@ -15,7 +15,7 @@ students2014 <- read.table("learning2014_1.csv", sep=",", header=T)
 str(students2014)
 ```
 
-# 2. Graphical overview and summary of variables
+- Graphical overview and summary of variables
 
 This paired data overview shows the relationship of each variable to each other. First, more data are available from females than males. According to the line charts, the distribution of most variables is simular when comparing female and male results. The boxplots show the general distribution of the data and how wide spread they are in relation to the mean. In this case highlighting 'age' with the most outliers, meaning the data are mostly on young people in their 20s and 30s. The scatter plots visualize the interaction of the variables indicating any correlation present. Another way of looking into the correlation is with the correlation coefficient 'Cor', determining the relationship of two variables by giving it a value that can easily be compared (ranging from 0 to 1 or -1, with the strongest correlation at 1, negative values just mean that if one variable increases that the other decreases instead of increasing as well). For this data set we look mainly into what can influence the 'points' of someone, so we focus on the correlations coefficient in that column. The strongest relationship is between 'points' and 'attitude' followed by 'strat' and 'surf'. 
 
@@ -26,7 +26,7 @@ p <- ggpairs(students2014, mapping = aes(col = gender, alpha = 0.3), lower = lis
 p
 ```
 
-# 3. Fitting a regression model
+- Fitting a regression model
 
 The variables 'attitude', 'stra', and 'surf' were choosen based on their correlation coefficient with the dependent variable 'points'. This model gives descriptive statistics of the data, such as the minimum, maximum and median values as well as the standard error and R-squared. The intercept tells where the modeled outcome equals zero. Additionally, it predicts the amount of change for each variable when the dependant variable 'points' increases one unit. E.g. when 'points' increases on unit, 'attitude' increases by 3.4, 'stra' increases by 0.9 and 'surf' decreases by 0.6. However, the p value indicates if this relationship is significant or not, which just means how likely it is that the model prediction is accurate. According to the model output, from the three variables only 'attitude' is highly significant.
 
@@ -36,7 +36,7 @@ my_model <- lm(points ~ attitude + stra + surf, data = students2014)
 summary(my_model)
 ```
 
-# 4. Fitted model
+- Fitted model
 
 Based on the outcome of the first model, 'stra' and 'surf' will now be excluded from the model. The estimated outcome has changed a little and the standard error has decreased.The multiple R-squared of 0.2 indicates a weak (but highly significant) positive relationship. This means that a change in attitude has a weak effect on the Points, meaning increases the points a little when increasing itself.
 

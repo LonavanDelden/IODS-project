@@ -18,8 +18,7 @@ mat_por <- inner_join(mat, por, by = join_by, suffix = c(".mat",".por"))
 colnames(mat_por)
 glimpse(mat_por)
 
-#keep only the students appearing in both data sets???
-
+#keep only the students appearing in both data sets
 #create a data frame excluding not joined columns and print columns
 alc <- select(mat_por, one_of(join_by))
 notjoined_columns <- colnames (mat)[!colnames(mat) %in% join_by]

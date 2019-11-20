@@ -1,4 +1,4 @@
-# Logistic regression
+# 3. Logistic regression
 
 Starting the chapter 3 exercise by ensuring the right working directory and reading in the created data set from the data wrangling exercise and print the variable names. My data set was saved as 'alc.csv'. The data set includes 382 observations with 35 variables. The observations are from Portuguese students which now will be analysed for their alcohol consumption and to identify which variables are related factors. The variables in question are listed below in the column names, with emphasis on the computed alcohol use "alc_use", which is the avergae of daily and weekly alcohol consumption '(Dalc+Walc)/2'. If this use is higher than 2 than the logical factor "high_use" appears TRUE. This high alcohol usage will be the target variable for the exercise.
 
@@ -12,7 +12,7 @@ colnames(alc)
 glimpse(alc)
 ```
 
-# Most interesting variables
+- Most interesting variables
 
 The variables failures, absences, sex and age are choosen as predictors. The hypotheses are that failures, absences and age increase with alcohol consumption. Due to popular consensus women will have less high alcohol usage than men.
 Findings: Failures, absences and sex were significant predictors. Age, on the other hand, showed no significant influence on high alcohol usage. Therefore, the hypothesis that failures and absences increase with high alcohol usage can be confirmed but for the impact of age is no confidence. The boxplot and cross table highlight the lower alcohol usage by women compared to men, which confirms the hypothesis.
@@ -48,7 +48,7 @@ table(high_use = alc$high_use, sex = alc$sex)
 table(high_use = alc$high_use, age = alc$age)
 ```
 
-# Fitted model and odds ratios
+- Fitted model and odds ratios
 
 The model was adjusted based on the insignificant influence of the age variable (see the insignificant ANOVA output at the bottom of the next window), which increases the significance level of the other variables. The remaining three variables are positively correlated to alcohol usage. 
 
