@@ -1,26 +1,37 @@
+
 # 4. Clustering and classification
 
-Read in the data and explore.
+Read in the data and explore. The dataset is on Housing Values in Boston Suburbs in the USA. The variables include crime statistics and information on residency types and values, such as access to infrastructure, schooling etc. Please find the summary below.
 
-```{r data}
+```{r data, echo=TRUE, results='markup', message=FALSE, warning=FALSE}
 library(MASS)
 data("Boston")
 str(Boston)
 summary(Boston)
 ```
 
-- Draw a correlation matrix to look at relationships between variables
+- Graphical overview of the data and a correlation matrix to look at relationships between variables:
 
-```{r cor}
+The graphical overview shows that the variables are not normally distributed (maybe except for "rm" - rooms per dwelling).
+
+The matrix is highlighting the strongest positive correlation between the accessibility to radial highways ("rad") and the full-value property-tax rate ("tax), which means that the property taxes increase substantially when it is close to long distance connections, which is crucial for many industries.
+
+The strongest negative correlations are between the weighted mean of distances to five Boston employment centres ("dis") with age of the building, nitrogen oxide concentrations ("nox") and the proportion of non-retail business acres per town ("indus"). This means when the distance to the employment centres increases, the buildung age, nox levels and non-retail businesses decreases, which makes sense as new buildings are more common in the outskirt of town (easier to build new than to renovate), less polution from traffic and the businesses like the crowded center better as well. Another strong negative correlation is between the lower status of the population ("lstat") and the median value of owner-occupied homes ("medv"), which is a no-brainer.
+
+```{r cor, echo=TRUE, results='markup', message=FALSE, warning=FALSE}
 library(corrplot)
 library(tidyverse)
+library(GGally)
+ggpairs(Boston, upper = list(continuous = wrap("cor", size=2.6)))
 cor_matrix <- cor(Boston) %>% round(digits = 2)
 corrplot(cor_matrix, method="circle", type = "upper", cl.pos = "b", tl.pos = "d", tl.cex = 0.6)
 ```
 
 - Establish the data frame
 
-```{r scaling}
+The data set is standardized by scaling the variables according to their mean and standard deviation. Please see the summary below. The mean is now 0 for all the variables and the values are overall a lot lower as they are now scaled to their vairiable dependent values instead of real values.
+
+```{r scaling, echo=TRUE, results='markup', message=FALSE, warning=FALSE}
 boston_scaled <- scale(Boston)
 boston_scaled <- as.data.frame(boston_scaled)
 summary(boston_scaled)
@@ -28,7 +39,7 @@ summary(boston_scaled)
 
 - Categorize the crime data into quantiles to scale low to high crime rates
 
-```{r quantiles}
+```{r quantiles, echo=TRUE, results='markup', message=FALSE, warning=FALSE}
 bins <- quantile(boston_scaled$crim)
 crime <- cut(boston_scaled$crim, breaks = bins, include.lowest = TRUE, label = c("low", "med_low", "med_high", "high"))
 table(crime)
@@ -38,7 +49,7 @@ boston_scaled <- data.frame(boston_scaled, crime)
 
 - Split the data into train and test set to validate the model and adjust the data frame
 
-```{r train}
+```{r train, echo=TRUE, results='markup', message=FALSE, warning=FALSE}
 n <- nrow(boston_scaled)
 ind <- sample(n,  size = n * 0.8)
 train <- boston_scaled[ind,]
@@ -51,7 +62,7 @@ str(test)
 
 - LDA analysis with crime as target variable, plot the data and create biplot arrows
 
-```{r LDA}
+```{r LDA, echo=TRUE, results='markup', message=FALSE, warning=FALSE}
 lda.fit <- lda(crime ~ ., data = train)
 lda.fit
 lda.arrows <- function(x, myscale = 1, arrow_heads = 0.1, color = "red", tex = 0.75, choices = c(1,2)){
@@ -67,65 +78,79 @@ plot(lda.fit, dimen = 2, col = classes, pch = classes)
 lda.arrows(lda.fit, myscale = 1.4)
 ```
 
-- LDA is predicting classes with the test dataset and the outpot is compared with the real data in a cross table
+- LDA is predicting classes with the test dataset and the output is compared with the real data in a cross table
 
-```{r LDA prediction}
+The LDA model results in about a third of the classes being predicted wrong when compared to the real data (70 classes correct as in low=low etc. and 32 classes wrong as in low=low_med etc).
+
+```{r LDA prediction, echo=TRUE, results='markup', message=FALSE, warning=FALSE}
 lda.pred <- predict(lda.fit, newdata = test)
 table(correct = correct_classes, predicted = lda.pred$class)
 ```
 
-- Now we are moving on to clustering by working on the original dataset Boston. The data will be prepared and explored and clustered by K means. The color seperates to three clusters and only the 5 variables are shown to better read the matrix.
+- Clustering with K-means
 
-```{r clustering}
+Working on the original dataset "Boston"", which is scaled again. The data are prepared, explored and clustered by K means. The k plot determined two clusters with the strong change below 2.5. Therefore the clusters for the visualization was set to two.
+
+```{r clustering, echo=TRUE, results='markup', message=FALSE, warning=FALSE}
 library(MASS)
 data('Boston')
-dist_eu <- dist(Boston)
-dist_man <- dist(Boston, method = "manhattan")
+boston_scaled1 <- scale(Boston)
+boston_scaled1 <- as.data.frame(boston_scaled1)
+dist_eu <- dist(boston_scaled1)
+dist_man <- dist(boston_scaled1, method = "manhattan")
 summary(dist_eu)
 summary(dist_man)
-km <-kmeans(Boston, centers = 3)
-pairs(Boston[6:10], col = km$cluster)
+set.seed(123)
+k_max <- 10
+twcss <- sapply(1:k_max, function(k){kmeans(boston_scaled1, k)$tot.withinss})
+qplot(x = 1:k_max, y = twcss, geom = 'line')
+km <-kmeans(boston_scaled1, centers = 2)
+pairs(boston_scaled1, col = km$cluster)
 ```
 
-- K-means: determine the k and visualize
+- Bonus (hit a dead end, not need to review any further)
 
-Bonus: Perform k-means on the original Boston data with some reasonable number of clusters (> 2). Remember to standardize the dataset. Then perform LDA using the clusters as target classes. Include all the variables in the Boston data in the LDA model. Visualize the results with a biplot (include arrows representing the relationships of the original variables to the LDA solution). Interpret the results. Which variables are the most influencial linear separators for the clusters?
+Perform k-means on the original Boston data with some reasonable number of clusters (> 2). Remember to standardize the dataset. Then perform LDA using the clusters as target classes. Include all the variables in the Boston data in the LDA model. Visualize the results with a biplot (include arrows representing the relationships of the original variables to the LDA solution). Interpret the results. Which variables are the most influencial linear separators for the clusters?
 
-```{r Kmean}
+```{r Kmean, echo=TRUE, results='markup', message=FALSE, warning=FALSE}
 library(MASS)
 library(ggplot2)
 data('Boston')
-boston_scaled <- scale(Boston)
-boston_scaled <- as.data.frame(boston_scaled)
-set.seed(123)
-k_max <- 10
-twcss <- sapply(1:k_max, function(k){kmeans(boston_scaled, k)$tot.withinss})
-qplot(x = 1:k_max, y = twcss, geom = 'line')
-km <-kmeans(boston_scaled, centers = 2)
-pairs(Boston, col = km$cluster)
+boston_scaled2 <- scale(Boston)
+boston_scaled2 <- as.data.frame(boston_scaled2)
+crime <- cut(boston_scaled2$crim, breaks = bins, include.lowest = TRUE, label = c("low", "med_low", "med_high", "high"))
+km <-kmeans(boston_scaled2, centers = 3)
+lda.fit <- lda(crime ~ ., data = boston_scaled2)
+lda.fit
+lda.arrows <- function(x, myscale = 1, arrow_heads = 0.1, color = "red", tex = 0.75, choices = c(1,2)){
+  heads <- coef(x)
+  arrows(x0 = 0, y0 = 0, 
+         x1 = myscale * heads[,choices[1]], 
+         y1 = myscale * heads[,choices[2]], col=color, length = arrow_heads)
+  text(myscale * heads[,choices], labels = row.names(heads), 
+       cex = tex, col=color, pos=3)
+}
+classes <- as.numeric(boston_scaled2$crime)
+plot(lda.fit, dimen = 2, col = classes, pch = classes)
+lda.arrows(lda.fit, myscale = 1.4)
 ```
 
-Super-Bonus: 
+Super-Bonus: (hit a dead end, not need to review any further)
 
+```{r superbonus, echo=TRUE, results='markup', message=FALSE, warning=FALSE}
 boston_scaled <- scale(Boston)
 boston_scaled <- as.data.frame(boston_scaled)
 summary(boston_scaled)
-
 model_predictors <- dplyr::select(train, -crime)
-# check the dimensions
 dim(model_predictors)
 dim(lda.fit$scaling)
-# matrix multiplication
 matrix_product <- as.matrix(model_predictors) %*% lda.fit$scaling
 matrix_product <- as.data.frame(matrix_product)
-
 install.packages(plotly)
 library(plotly)
-
-3Dplot:
 plot_ly(x = matrix_product$LD1, y = matrix_product$LD2, z = matrix_product$LD3, type= 'scatter3d', mode='markers')
+```
 
-Adjust the code: add argument color as a argument in the plot_ly() function. Set the color to be the crime classes of the train set. Draw another 3D plot where the color is defined by the clusters of the k-means. How do the plots differ? Are there any similarities?
 
 before kniting:
 library(GGally)

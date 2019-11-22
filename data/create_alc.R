@@ -1,8 +1,11 @@
 #Lona van Delden, November 14th 2019, data wrangling script to merge files for the logistic regression exercise
 #Data from UCI Macine Learning Repository: Paulo Cortez, University of Minho, GuimarÃ£es, Portugal, http://www3.dsi.uminho.pt/pcortez
 #Reference: P. Cortez and A. Silva. Using Data Mining to Predict Secondary School Student Performance. In A. Brito and J. Teixeira Eds., Proceedings of 5th FUture BUsiness TEChnology Conference (FUBUTEC 2008) pp. 5-12, Porto, Portugal, April, 2008, EUROSIS, ISBN 978-9077381-39-7.
+## <- is used when comments are based on the course lecture from 20/11/2019
 
 #read in the data sets and explore structure and dimensions
+##could also use: download & unzip in R directly
+##ID numbers: 'data' %>% mutate (id=1000+row numbers())
 mat <- read.table("student-mat.csv", sep=";", header=TRUE)
 por <- read.table("student-por.csv", sep=";", header=TRUE)
 str(mat)
@@ -19,6 +22,8 @@ colnames(mat_por)
 glimpse(mat_por)
 
 #keep only the students appearing in both data sets
+##using common identifiers: setdiff(colnames(por_id), free_cols)
+##add more rows: pormath <- por_id %>% bind_rows(math_id) %>% group_by(.dots=join_cols) %>% summarise(n=n(), id.p=min(id), id.m=max(id),...)
 #create a data frame excluding not joined columns and print columns
 alc <- select(mat_por, one_of(join_by))
 notjoined_columns <- colnames (mat)[!colnames(mat) %in% join_by]
