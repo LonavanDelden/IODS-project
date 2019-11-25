@@ -120,18 +120,18 @@ pairs(boston_scaled1[10:14], col = km$cluster)
 
 - Bonus
 
-K-means performed on the original Boston data and standarzied by scaling with 3 clusters. The index of accessability ro radial highways (rad) is the most influencial variable.
+K-means performed on the original Boston data and standarzied by scaling with 3 clusters. The proportion of residential land zoned for lots over 25,000 sq.ft.s (zn) is the most influencial variable.
 
 ```{r Kmean, echo=TRUE, results='markup', message=FALSE, warning=FALSE}
 library(MASS)
 library(ggplot2)
 data('Boston')
 boston_scaled2 <- scale(Boston)
-boston_scaled2 <- as.data.frame(boston_scaled2)
-crime <- cut(boston_scaled2$crim, breaks = bins, include.lowest = TRUE, label = c("low", "med_low", "med_high", "high"))
 km <-kmeans(boston_scaled2, centers = 3)
-lda.fit <- lda(crime ~ ., data = boston_scaled2)
-lda.fit
+cluster <- km$cluster
+boston_scaled2 <- data.frame(boston_scaled2, cluster)
+lda.fit2 <- lda(cluster ~ ., data = boston_scaled2)
+lda.fit2
 lda.arrows <- function(x, myscale = 1, arrow_heads = 0.1, color = "red", tex = 0.75, choices = c(1,2)){
   heads <- coef(x)
   arrows(x0 = 0, y0 = 0, 
@@ -140,9 +140,9 @@ lda.arrows <- function(x, myscale = 1, arrow_heads = 0.1, color = "red", tex = 0
   text(myscale * heads[,choices], labels = row.names(heads), 
        cex = tex, col=color, pos=3)
 }
-classes <- as.numeric(boston_scaled2$cluster)
-plot(lda.fit, dimen = 2, col = km$cluster, pch = km$cluster)
-lda.arrows(lda.fit, myscale = 1.4)
+classes2 <- as.numeric(boston_scaled2$cluster)
+plot(lda.fit2, dimen = 2, col = classes2, pch = classes2, main = "LDA biplot using three clusters 1, 2 and 3")
+lda.arrows(lda.fit2, myscale = 1.4)
 ```
 
 - Super-Bonus: (hit a dead end, no need to review any further, %*% was recognized as a non-conformable argument)
@@ -158,7 +158,8 @@ matrix_product <- as.matrix(model_predictors) %*% lda.fit$scaling
 matrix_product <- as.data.frame(matrix_product)
 install.packages(plotly)
 library(plotly)
-plot_ly(x = matrix_product$LD1, y = matrix_product$LD2, z = matrix_product$LD3, type= 'scatter3d', mode='markers')
+crimeplot <- plot_ly(x = matrix_product$LD1, y = matrix_product$LD2, z = matrix_product$LD3, type= 'scatter3d', mode='markers')
+clusterplot <- plot_ly(x = matrix_product$LD1, y = matrix_product$LD2, z = matrix_product$LD3, type= 'scatter3d', mode='markers', color = classes3)
 ```
 
 

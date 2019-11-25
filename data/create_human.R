@@ -58,8 +58,43 @@ write.table(human, file = "human.csv", append = FALSE, quote = TRUE, sep = ",",
             col.names = TRUE, qmethod = "double",
             fileEncoding = "")
 
-#just to check if it worked ok
-human <- read.csv("human.csv", sep = ",", header = TRUE)
+#continue the data wrangling in chapter 5
+setwd("C:/Users/lonav/Documents/IODS-project/data")
+library(openxlsx)
+alc <- read.csv("human.csv", sep = ",", header = TRUE)
+library(dplyr)
+colnames(human)
 dim(human)
+str(human)
+#Observations: 195, Variables: 19
+#The variables are:
+#"Country" = Country name
+#"hdi" = Human Development Index
+#"GNI" = Gross National Income per capita
+#"gii" = Gender Inequality Idex
+#"life" = Life expectancy at birth
+#"exp_edu" = Expected years of schooling
+#"mean_edu" = Average years of schooling
+#"mat.mor_rat" = Maternal mortality ratio
+#"birth.rate" = Adolescent birth rate
+#"par.repr" = Percetange of female representatives in parliament
+#"f.sec_edu" = Proportion of females with at least secondary education
+#"m.sec_edu" = Proportion of males with at least secondary education
+#"f.labour" = Proportion of females in the labour force
+#"m.labour" = Proportion of males in the labour force
+#"f_m.sec_edu" = f.sec_edu / m.sec_edu
+#"f_m.labour" = f.labour / m.labour
+
+#Mutate GNI variabel to numerical with string manipulation
+library(stringr)
+str_replace(human$GNI, pattern=",", replace ="") %>% as.numeric
+keep <- c("Country", "f_m.sec_edu", "f_m.labour", "life", "exp_edu", "GNI", "mat.mor_rat", "birth.rate", "par.repr")
+
+#PCA on standardized human data set
+human_std <- scale(human)
+summary(human_std)
+pca_human <- prcomp(human_std)
+biplot(pca_human, choices = 1:2)
+
 
 

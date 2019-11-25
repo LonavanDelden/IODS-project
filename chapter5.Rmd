@@ -1,0 +1,14 @@
+# 5. Dimensionality reduction techniques
+
+
+```{r human}
+getwd()
+setwd("C:/Users/lonav/Documents/IODS-project/data")
+library(openxlsx)
+alc <- read.csv("human.csv", sep = ",", header = TRUE)
+library(dplyr)
+colnames(human)
+glimpse(human)
+```
+
+
