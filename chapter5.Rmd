@@ -1,7 +1,7 @@
 # 5. Dimensionality reduction techniques
 
 
-```{r human}
+{r human}
 getwd()
 setwd("C:/Users/lonav/Documents/IODS-project/data")
 library(openxlsx)
