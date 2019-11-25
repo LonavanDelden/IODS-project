@@ -89,7 +89,7 @@ table(correct = correct_classes, predicted = lda.pred$class)
 
 - Clustering with K-means
 
-Working on the original dataset "Boston"", which is scaled again. The data are prepared, explored and clustered by K means. The k plot determined two clusters with the strong change below 2.5. Therefore the clusters for the visualization was set to two.
+Working on the original dataset "Boston"", which is scaled again. The data are prepared, explored and clustered by K means. The k plot determined two clusters with the strong change below 2.5. Therefore the clusters for the visualization was set to two. The matrix visualizes all variables in when plotted against each other, therefore the top and the bottom are mirrored.
 
 ```{r clustering, echo=TRUE, results='markup', message=FALSE, warning=FALSE}
 library(MASS)
@@ -108,6 +108,15 @@ km <-kmeans(boston_scaled1, centers = 2)
 pairs(boston_scaled1, col = km$cluster)
 ```
 
+To see the variables more clearly, the plot was cut into smaller pieces of 5 variables max. Not all variables show a clear clustering when compared to each other but e.g. proportion of non-retail businesses (indus), nitrogen oxides (nox),building age (age) and median home value (medv) seperate quite well into clusters when compared to other variables. Especially nitrogen oxides (nox) show clear cluster seperation around the mean when paired with age, rm and dis etc. Just to clarify, the data are scaled, which means in this case the cluster seperate the data in relation to the mean. 
+
+```{r cluster2, echo=TRUE, results='markup', message=FALSE, warning=FALSE}
+library(MASS)
+km <-kmeans(boston_scaled1, centers = 2)
+pairs(boston_scaled1[1:5], col = km$cluster)
+pairs(boston_scaled1[5:10], col = km$cluster)
+pairs(boston_scaled1[10:14], col = km$cluster)
+```
 - Bonus (hit a dead end, not need to review any further)
 
 Perform k-means on the original Boston data with some reasonable number of clusters (> 2). Remember to standardize the dataset. Then perform LDA using the clusters as target classes. Include all the variables in the Boston data in the LDA model. Visualize the results with a biplot (include arrows representing the relationships of the original variables to the LDA solution). Interpret the results. Which variables are the most influencial linear separators for the clusters?
