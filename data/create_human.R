@@ -61,12 +61,12 @@ write.table(human, file = "human.csv", append = FALSE, quote = TRUE, sep = ",",
 #continue the data wrangling in chapter 5
 setwd("C:/Users/lonav/Documents/IODS-project/data")
 library(openxlsx)
-alc <- read.csv("human.csv", sep = ",", header = TRUE)
+human <- read.csv("human.csv", sep = ",", header = TRUE)
 library(dplyr)
 colnames(human)
 dim(human)
 str(human)
-#Observations: 195, Variables: 19
+#Observations: 195, Variables: 9
 #The variables are:
 #"Country" = Country name
 #"hdi" = Human Development Index
@@ -85,16 +85,38 @@ str(human)
 #"f_m.sec_edu" = f.sec_edu / m.sec_edu
 #"f_m.labour" = f.labour / m.labour
 
-#Mutate GNI variabel to numerical with string manipulation
+#Mutate GNI variabel to numerical with string manipulation,...
 library(stringr)
 str_replace(human$GNI, pattern=",", replace ="") %>% as.numeric
-keep <- c("Country", "f_m.sec_edu", "f_m.labour", "life", "exp_edu", "GNI", "mat.mor_rat", "birth.rate", "par.repr")
 
-#PCA on standardized human data set
-human_std <- scale(human)
-summary(human_std)
-pca_human <- prcomp(human_std)
-biplot(pca_human, choices = 1:2)
+#select specific variables, ...
+keep <- c("Country", "f_m.sec_edu", "f_m.labour", "life", "exp_edu", "GNI", "mat.mor_rat", "birth.rate", "par.repr")
+human <- dplyr::select(human, one_of(keep))
+head(human)
+
+#filter missing data out, ...
+complete.cases(human)
+data.frame(human[-1], comp = complete.cases(human))
+human_ <- filter(human, complete.cases(human))
+
+#remove region related observations and ...
+tail(human_, n = 10)
+last <- nrow(human_) - 7
+human_ <- human_[1:last, ]
+
+#define row names by country.
+rownames(human_) <- human_$Country
+human_ <- select(human, -Country)
+dim(human_)
+#dimensions now: 155(181) observations, 8 columns
+
+#save the data set including the row names
+setwd("C:/Users/lonav/Documents/IODS-project/data")
+library(openxlsx)
+write.table(human, file = "human.csv", append = FALSE, quote = TRUE, sep = ",",
+            eol = "\n", na = "NA", dec = ".", row.names = FALSE,
+            col.names = TRUE, qmethod = "double",
+            fileEncoding = "")
 
 
 

@@ -9,6 +9,17 @@ alc <- read.csv("human.csv", sep = ",", header = TRUE)
 library(dplyr)
 colnames(human)
 glimpse(human)
+library(GGally)
+human_ <- select(human, -Country)
+ggpairs(human_)
+cor(human_) %>% corrplot()
 ```
 
 
+- PCA on standardized human data set
+library(dplyr)
+human_std <- scale(human)
+summary(human_std)
+pca_human <- prcomp(human_std)
+biplot(pca_human, choices = 1:2)
+s <- summary(pca_human)
