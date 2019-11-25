@@ -131,13 +131,14 @@ lda.arrows <- function(x, myscale = 1, arrow_heads = 0.1, color = "red", tex = 0
        cex = tex, col=color, pos=3)
 }
 classes <- as.numeric(boston_scaled2$crime)
+```
+These lines did not work:
 plot(lda.fit, dimen = 2, col = classes, pch = classes)
 lda.arrows(lda.fit, myscale = 1.4)
-```
 
-Super-Bonus: (hit a dead end, not need to review any further)
+Super-Bonus: (hit a dead end, not need to review any further, %*% was recognized as a non-conformable argument)
 
-```{r superbonus, echo=TRUE, results='markup', message=FALSE, warning=FALSE}
+{r superbonus, echo=TRUE, results='markup', message=FALSE, warning=FALSE}
 boston_scaled <- scale(Boston)
 boston_scaled <- as.data.frame(boston_scaled)
 summary(boston_scaled)
