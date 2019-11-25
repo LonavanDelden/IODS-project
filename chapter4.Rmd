@@ -117,9 +117,10 @@ pairs(boston_scaled1[1:5], col = km$cluster)
 pairs(boston_scaled1[5:10], col = km$cluster)
 pairs(boston_scaled1[10:14], col = km$cluster)
 ```
-- Bonus (hit a dead end, not need to review any further)
 
-Perform k-means on the original Boston data with some reasonable number of clusters (> 2). Remember to standardize the dataset. Then perform LDA using the clusters as target classes. Include all the variables in the Boston data in the LDA model. Visualize the results with a biplot (include arrows representing the relationships of the original variables to the LDA solution). Interpret the results. Which variables are the most influencial linear separators for the clusters?
+- Bonus
+
+K-means performed on the original Boston data and standarzied by scaling with 3 clusters. The index of accessability ro radial highways (rad) is the most influencial variable.
 
 ```{r Kmean, echo=TRUE, results='markup', message=FALSE, warning=FALSE}
 library(MASS)
@@ -139,13 +140,12 @@ lda.arrows <- function(x, myscale = 1, arrow_heads = 0.1, color = "red", tex = 0
   text(myscale * heads[,choices], labels = row.names(heads), 
        cex = tex, col=color, pos=3)
 }
-classes <- as.numeric(boston_scaled2$crime)
-```
-These lines did not work:
-plot(lda.fit, dimen = 2, col = classes, pch = classes)
+classes <- as.numeric(boston_scaled2$cluster)
+plot(lda.fit, dimen = 2, col = km$cluster, pch = km$cluster)
 lda.arrows(lda.fit, myscale = 1.4)
+```
 
-Super-Bonus: (hit a dead end, not need to review any further, %*% was recognized as a non-conformable argument)
+- Super-Bonus: (hit a dead end, no need to review any further, %*% was recognized as a non-conformable argument)
 
 {r superbonus, echo=TRUE, results='markup', message=FALSE, warning=FALSE}
 boston_scaled <- scale(Boston)
