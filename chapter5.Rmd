@@ -1,18 +1,20 @@
 # 5. Dimensionality reduction techniques
 
+- Data overview
 
-{r human}
+
+```{r human}
 getwd()
-setwd("C:/Users/lonav/Documents/IODS-project/data")
 library(openxlsx)
-alc <- read.csv("human.csv", sep = ",", header = TRUE)
 library(dplyr)
+library(GGally)
+library(corrplot)
+human <- read.csv("human.csv", sep = ",", header = TRUE)
+dim(human)
 colnames(human)
 glimpse(human)
-library(GGally)
-human_ <- select(human, -Country)
-ggpairs(human_)
-cor(human_) %>% corrplot()
+ggpairs(human)
+cor(human) %>% corrplot()
 ```
 
 

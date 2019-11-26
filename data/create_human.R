@@ -51,17 +51,14 @@ str(gii_1)
 join_by <- "Country"
 human <- inner_join(hd_1, gii_1, by = join_by)
 str(human)
-setwd("C:/Users/lonav/Documents/IODS-project/data")
-library(openxlsx)
-write.table(human, file = "human.csv", append = FALSE, quote = TRUE, sep = ",",
-            eol = "\n", na = "NA", dec = ".", row.names = FALSE,
-            col.names = TRUE, qmethod = "double",
-            fileEncoding = "")
+#setwd("C:/Users/lonav/Documents/IODS-project/data")
+#library(openxlsx)
+#write.table(human, file = "human.csv", append = FALSE, quote = TRUE, sep = ",",
+#            eol = "\n", na = "NA", dec = ".", row.names = FALSE,
+#            col.names = TRUE, qmethod = "double",
+#            fileEncoding = "")
 
 #continue the data wrangling in chapter 5
-setwd("C:/Users/lonav/Documents/IODS-project/data")
-library(openxlsx)
-human <- read.csv("human.csv", sep = ",", header = TRUE)
 library(dplyr)
 colnames(human)
 dim(human)
@@ -112,9 +109,9 @@ dim(HUMAN2)
 #dimensions now: 155 observations, 8 columns
 
 #save the data set including the row names
-setwd("C:/Users/lonav/Documents/IODS-project/data")
+setwd("C:/Users/lonav/Documents/IODS-project")
 library(openxlsx)
-write.table(human, file = "human.csv", append = FALSE, quote = TRUE, sep = ",",
+write.table(HUMAN2, file = "human.csv", append = FALSE, quote = TRUE, sep = ",",
             eol = "\n", na = "NA", dec = ".", row.names = FALSE,
             col.names = TRUE, qmethod = "double",
             fileEncoding = "")
