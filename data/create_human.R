@@ -87,28 +87,29 @@ str(human)
 
 #Mutate GNI variabel to numerical with string manipulation,...
 library(stringr)
-str_replace(human$GNI, pattern=",", replace ="") %>% as.numeric
+HUMAN <- human %>% 
+  mutate(GNI = str_replace(GNI, pattern=",", replace ="") %>% as.numeric)
 
 #select specific variables, ...
 keep <- c("Country", "f_m.sec_edu", "f_m.labour", "life", "exp_edu", "GNI", "mat.mor_rat", "birth.rate", "par.repr")
-human <- dplyr::select(human, one_of(keep))
-head(human)
+HUMAN <- dplyr::select(HUMAN, one_of(keep))
+head(HUMAN)
 
 #filter missing data out, ...
-complete.cases(human)
-data.frame(human[-1], comp = complete.cases(human))
-human_ <- filter(human, complete.cases(human))
+complete.cases(HUMAN)
+data.frame(HUMAN[-1], comp = complete.cases(HUMAN))
+HUMAN_ <- filter(HUMAN, complete.cases(HUMAN))
 
 #remove region related observations and ...
-tail(human_, n = 10)
-last <- nrow(human_) - 7
-human_ <- human_[1:last, ]
+tail(HUMAN_, n = 10)
+last <- nrow(HUMAN_) - 7
+HUMAN1 <- HUMAN_[1:last, ]
 
 #define row names by country.
-rownames(human_) <- human_$Country
-human_ <- select(human, -Country)
-dim(human_)
-#dimensions now: 155(181) observations, 8 columns
+rownames(HUMAN1) <- HUMAN1$Country
+HUMAN2 <- select(HUMAN1, -Country)
+dim(HUMAN2)
+#dimensions now: 155 observations, 8 columns
 
 #save the data set including the row names
 setwd("C:/Users/lonav/Documents/IODS-project/data")
@@ -117,6 +118,4 @@ write.table(human, file = "human.csv", append = FALSE, quote = TRUE, sep = ",",
             eol = "\n", na = "NA", dec = ".", row.names = FALSE,
             col.names = TRUE, qmethod = "double",
             fileEncoding = "")
-
-
 
