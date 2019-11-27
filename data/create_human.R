@@ -112,7 +112,7 @@ dim(HUMAN2)
 setwd("C:/Users/lonav/Documents/IODS-project")
 library(openxlsx)
 write.table(HUMAN2, file = "human.csv", append = FALSE, quote = TRUE, sep = ",",
-            eol = "\n", na = "NA", dec = ".", row.names = FALSE,
+            eol = "\n", na = "NA", dec = ".", row.names = TRUE,
             col.names = TRUE, qmethod = "double",
             fileEncoding = "")
 

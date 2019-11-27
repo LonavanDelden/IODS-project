@@ -1,0 +1,29 @@
+# Additional stuff that I came across during the course
+
+-during chapter 5
+
+```{r PCA_scaled, echo=TRUE, results='markup', message=FALSE, warning=FALSE}
+human_std <- scale(human)
+summary(human_std)
+pca_human <- prcomp(human_std)
+s <- summary(pca_human)
+s
+pca_pr <- round(100*s$importance[2, ], digits = 1)
+pca_pr
+pc_lab <- paste0(names(pca_pr),  " (", pca_pr, "%)")
+
+pca_human_plot <- autoplot(pca_human, data = pca_human, colour = "darkgreen", loadings = TRUE, loadings.label = TRUE, loadings.colour = "red") + ggtitle("PCA on 'human' data set") + annotate("text", x = -0.4, y = -0.3, label ="test")
+
+#cannot get the margins right
+biplot(pca_human, cex = c(0.8, 1), col = c("grey40", "deeppink2"), xlab = pc_lab[1], ylab = pc_lab[2], main = "PCA on human data set", margin = c(0,0,10,0))
+
+#saving graphs as pictures
+ggsave(filename = "C:/Users/lonav/Documents/IODS-project/figures/pca_human_plot.png", plot = pca_human_plot)
+```
+
+just stuff to try: 
+cap <- theme(plot.caption = element_text(angle = 0, size = captionLabSize, face = 'plain', vjust = 1))
+
+- put picture and caption in the markup:
+
+![caption]("C:/Users/lonav/Documents/IODS-project/figures/pca_plot_not_std.png") 
