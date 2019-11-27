@@ -59,7 +59,6 @@ human_std <- scale(human)
 summary(human_std)
 pca_human <- prcomp(human_std)
 s <- summary(pca_human)
-s
 pca_pr <- round(100*s$importance[2, ], digits = 1)
 pca_pr
 pc_lab <- paste0(names(pca_pr),  " (", pca_pr, "%)")
@@ -71,19 +70,30 @@ GNI = Gross National Income per capita, life = Life expectancy at birth, exp_edu
 
 - MCA
 
+The tea data are quite complex with 36 variables on qualitative measures. Further analysis is done with a subset of 6 variables.
+
 ```{r tea, echo=TRUE, results='markup', message=FALSE, warning=FALSE}
 library(FactoMineR)
 data("tea")
 str(tea)
 dim(tea)
+summary(tea)
 keep_columns <- c("Tea", "How", "how", "sugar", "where", "lunch")
 tea_time <- select(tea, one_of(keep_columns))
-gather(tea_time) %>% ggplot(aes(value)) + geom_bar() + facet_wrap("key", scales = "free") + theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 8)) 
+gather(tea_time) %>% ggplot(aes(value)) + geom_bar() + facet_wrap("key", scales = "free") + theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 8))
 ```
 
+- MCA biplot 
 
 ```{r MCA, echo=TRUE, results='markup', message=FALSE, warning=FALSE}
+library(factoextra)
 mca <- MCA(tea_time, graph = FALSE)
 summary(mca)
-plot(tea_time, invisible=c("ind"), habillage = "quali")
+fviz_screeplot(mca, addlabels = TRUE, ylim = c(0, 45))
+fviz_mca_biplot(mca, ggtheme = theme_minimal())
+plot(mca, invisible=c("ind"), habillage = "quali")
+mca_pr <- round(100*s$importance[2, ], digits = 1)
+mca_pr
+mc_lab <- paste0(names(mca_pr),  " (", mca_pr, "%)")
+#biplot(mca, cex = c(0.8, 1), col = c("grey40", "deeppink2"), xlab = pc_lab[1], ylab = pc_lab[2])
 ```

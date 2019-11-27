@@ -147,20 +147,28 @@ lda.arrows(lda.fit2, myscale = 1.4)
 
 - Super-Bonus: (hit a dead end, no need to review any further, %*% was recognized as a non-conformable argument)
 
-{r superbonus, echo=TRUE, results='markup', message=FALSE, warning=FALSE}
+```{r superbonus, echo=TRUE, results='markup', message=FALSE, warning=FALSE}
 boston_scaled <- scale(Boston)
 boston_scaled <- as.data.frame(boston_scaled)
 summary(boston_scaled)
+lda.fit <- lda(crime ~., data = train)
 model_predictors <- dplyr::select(train, -crime)
+dim(train)
 dim(model_predictors)
 dim(lda.fit$scaling)
-matrix_product <- as.matrix(model_predictors) %*% lda.fit$scaling
+matrix_product <- as.matrix(model_predictors) %*% lda.fit$scaling # if %*% is not working, check the dimensions! Second of first line needs to match first of the second line
 matrix_product <- as.data.frame(matrix_product)
-install.packages(plotly)
 library(plotly)
-crimeplot <- plot_ly(x = matrix_product$LD1, y = matrix_product$LD2, z = matrix_product$LD3, type= 'scatter3d', mode='markers')
-clusterplot <- plot_ly(x = matrix_product$LD1, y = matrix_product$LD2, z = matrix_product$LD3, type= 'scatter3d', mode='markers', color = classes3)
+p1 <- plot_ly(x = matrix_product$LD1, y = matrix_product$LD2, z = matrix_product$LD3, type= 'scatter3d', mode='markers')
+p1
+p2 <- plot_ly(x = matrix_product$LD1, y = matrix_product$LD2, z = matrix_product$LD3, type= 'scatter3d', mode='markers', color = train$crime)
+p2
+train2 <- dplyr::select(train, -crime)
+km3 <-kmeans(train2, centers = 3)
+p3 <- plot_ly(x = matrix_product$LD1, y = matrix_product$LD2, z = matrix_product$LD3, type= 'scatter3d', mode='markers', color = km3$cluster)
+p3
 ```
+
 
 
 before kniting:
