@@ -10,6 +10,12 @@ s <- summary(pca_human)
 s
 pca_pr <- round(100*s$importance[2, ], digits = 1)
 pca_pr
+
+#stuff tried to put caption names in the axis titles but didn't work
+#pc_label1 <- paste0(names("Mytitle1"), " (", pca_pr[1], "%)")
+#pc_label2 <- paste0(names("Mytitle2"), " (", pca_pr[2], "%)")
+#pc_lab <- paste0(names(pca_pr), " (", pca_pr, "%)")
+#biplot(pca_human, cex = c(0.8, 1), col = c("grey40", "deeppink2"), xlab = pc_label1, ylab = pc_lab[2])
 pc_lab <- paste0(names(pca_pr),  " (", pca_pr, "%)")
 
 pca_human_plot <- autoplot(pca_human, data = pca_human, colour = "darkgreen", loadings = TRUE, loadings.label = TRUE, loadings.colour = "red") + ggtitle("PCA on 'human' data set") + annotate("text", x = -0.4, y = -0.3, label ="test")
@@ -27,3 +33,5 @@ cap <- theme(plot.caption = element_text(angle = 0, size = captionLabSize, face 
 - put picture and caption in the markup:
 
 ![caption]("C:/Users/lonav/Documents/IODS-project/figures/pca_plot_not_std.png") 
+
+Scree plot with Eigenvalues, when Eigenvalue is higher than 1, gives the appropriate number of components

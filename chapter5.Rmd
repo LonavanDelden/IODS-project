@@ -2,6 +2,8 @@
 
 - Data overview
 
+The data are from the United Nations Development Programme to look into various variables to assess the Human Development Index (HDI) with more than just economic growth.
+
 Here are my header explanations:
 
 - "GNI" = Gross National Income per capita
@@ -52,7 +54,15 @@ biplot(pca_human, cex = c(0.8, 1), col = c("grey40", "deeppink2"), xlab = pc_lab
 
 - PCA on standardized data
 
-The PCA on the standardized data identifies more individual parameters which reduces the PC1 effect to about 54%, which is still the majority. Now the original variables can be identified to be 
+The PCA on the standardized data identifies more individual parameters which reduces the PC1 effect to about 54%, which is still the majority. Now the original variables, which are the most influencial, can be identified to be mostly secondary education related as well as the birth rate, maternal mortality ratio, life expectancy and gross national income (variable arrows go along PC1=0). Additionally, the variables group around education, life expectancy and GNI, which means that they are positively correlated to each other, while negatively correlatd to the birth rate and maternal mortality ratio. 
+
+PC1 example: Highly educated + low maternal mortality ratio -> developed countries (Europe, Scandinavia); less educated + high maternal mortality ratio -> developing countries (Africa)
+
+PC2 is the second most influencial component but with 16% a lot less strong, representing the situtation of women in the work force by combining women in parliament and the ratio of employed women to men (variable arrows go along PC2=0). These two varibles are close to a 90 degree angle to the other variables, which means that they are not likely to be correlated.
+
+PC2 example: High ratio of women to men with work + women in high ranking jobs -> many women in the work force (Africa, Scandinavia); low ratio of women to men with work +  less women in high ranking jobs ->  less women in the work force (Middle East, Asia)
+
+The PCA on these data highlight that the Human Development Index is mainly determined by the well known country development indicators such as gross national income, birth rate and secondary education but also that women in the work force is a valuable component to distinguish human development as e.g. some African countries are not doing well in the general development comparison but distinguish themselves clearly with their rate of women in the work force and highly ranking political jobs. This might give a more positive picture of euqality develoments in these countries as women in the parliament are more likely to work towards improvements in education and mortality rates as well.
 
 ```{r PCA_scaled, echo=TRUE, results='markup', message=FALSE, warning=FALSE}
 human_std <- scale(human)
@@ -61,16 +71,16 @@ pca_human <- prcomp(human_std)
 s <- summary(pca_human)
 pca_pr <- round(100*s$importance[2, ], digits = 1)
 pca_pr
-pc_lab <- paste0(names(pca_pr),  " (", pca_pr, "%)")
-biplot(pca_human, cex = c(0.8, 1), col = c("grey40", "deeppink2"), xlab = pc_lab[1], ylab = pc_lab[2])
+biplot(pca_human, cex = c(0.8, 1), col = c("grey40", "deeppink2"), xlab = "Country Development (53.6%)", ylab = "Women in the work force (16.2%)")
 ```
 
 Caption: 
 GNI = Gross National Income per capita, life = Life expectancy at birth, exp_edu = Expected years of schooling, mat.mor_rat = Maternal mortality ratio, birth.rate = Adolescent birth rate, par.repr = Percetange of female representatives in parliament, f_m.sec_edu = Ratio of females to males with at least secondary education, f_m.labour = Ratio of females to males in the labour force
+-----------------------------------------------------
 
 - MCA
 
-The tea data are quite complex with 36 variables on qualitative measures. Further analysis is done with a subset of 6 variables.
+The tea data are quite complex with 36 variables on qualitative measures. Further analysis is done with a subset of 6 variables.The distribution of the observations per variable is shown in the bar plot bellow and highlights that they differ very much from each other with 2 to 4 qualitative measures.
 
 ```{r tea, echo=TRUE, results='markup', message=FALSE, warning=FALSE}
 library(FactoMineR)
@@ -85,6 +95,10 @@ gather(tea_time) %>% ggplot(aes(value)) + geom_bar() + facet_wrap("key", scales 
 
 - MCA biplot 
 
+While the PCA clearly identified the most important component by grouping the correlated influencial variables, this MCA shows a more broad distribution of variables over the dimensions ranking from 5-15% explained variances (scree plot). This means that the first two dimensions are not as different from each other in significance as in the previous data set.
+
+So, the biplot only explains about 30% of the data variances, which means more than 2/3 of the data are not included and some insight might be missed. The individuals (observations) are represented as the blue dots and variables as red triangles. The distance between any observation or variable gives a measure of their similarity (or dissimilarity). Observations with similar profile are closed on the factor map. Despite the low percentage of explained variances, the biplot shows some pattern. But a correlation of the variable to their dimension highlights a weak relationship. Including more variable might improve the outcome but so far I would say that tea habits are randomly distributed and only relate weakly to each other.
+
 ```{r MCA, echo=TRUE, results='markup', message=FALSE, warning=FALSE}
 library(factoextra)
 mca <- MCA(tea_time, graph = FALSE)
@@ -95,5 +109,6 @@ plot(mca, invisible=c("ind"), habillage = "quali")
 mca_pr <- round(100*s$importance[2, ], digits = 1)
 mca_pr
 mc_lab <- paste0(names(mca_pr),  " (", mca_pr, "%)")
-#biplot(mca, cex = c(0.8, 1), col = c("grey40", "deeppink2"), xlab = pc_lab[1], ylab = pc_lab[2])
+fviz_mca_var(mca, choice = "mca.cor", ggtheme = theme_minimal())
 ```
+
