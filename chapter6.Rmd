@@ -1,0 +1,51 @@
+# Analysis of longitudinal data
+
+- Load libraries and data and check them out
+
+```{r BPRS+RATS, echo=TRUE, results='markup', message=FALSE, warning=FALSE}
+BPRS <- read.csv("BPRS.csv", sep = ",", header = TRUE)
+glimpse(BPRS)
+RATS <- read.csv("RATS.csv", sep = ",", header = TRUE)
+glimpse(RATS)
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+```
+
+- Factoring, standardizing and plotting
+
+```{r plotting, echo=TRUE, results='markup', message=FALSE, warning=FALSE}
+BPRS$treatment <- factor(BPRS$treatment)
+BPRS$subject <- factor(BPRS$subject)
+RATS$ID <- factor(RATS$ID)
+RATS$Group <- factor(RATS$Group)
+BPRS <- BPRS %>%
+  group_by(week) %>%
+  mutate(stdbprs = (bprs - mean(bprs))/sd(bprs)) %>%
+  ungroup()
+RATS <- RATS %>%
+  group_by(time) %>%
+  mutate(stdrats = (rats - mean(rats))/sd(rats)) %>%
+  ungroup()
+ggplot(BPRS, aes(x = week, y = bprs, linetype = subject)) +
+  geom_line() +
+  scale_linetype_manual(values = rep(1:10, times=4)) +
+  facet_grid(. ~ treatment, labeller = label_both) +
+  theme(legend.position = "none") + 
+  scale_y_continuous(limits = c(min(BPRS$bprs), max(BPRS$bprs)))
+ggplot(RATS, aes(x = time, y = rats, linetype = ID)) +
+  geom_line() +
+  scale_linetype_manual(values = rep(1:10, times=4)) +
+  facet_grid(. ~ Group, labeller = label_both) +
+  theme(legend.position = "none") + 
+  scale_y_continuous(limits = c(min(RATS$rats), max(RATS$rats)))
+```
+
+- 
+
+```{r , echo=TRUE, results='markup', message=FALSE, warning=FALSE}
+
+```
+
+
+

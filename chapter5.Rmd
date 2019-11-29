@@ -76,6 +76,7 @@ biplot(pca_human, cex = c(0.8, 1), col = c("grey40", "deeppink2"), xlab = "Count
 
 Caption: 
 GNI = Gross National Income per capita, life = Life expectancy at birth, exp_edu = Expected years of schooling, mat.mor_rat = Maternal mortality ratio, birth.rate = Adolescent birth rate, par.repr = Percetange of female representatives in parliament, f_m.sec_edu = Ratio of females to males with at least secondary education, f_m.labour = Ratio of females to males in the labour force
+
 -----------------------------------------------------
 
 - MCA
