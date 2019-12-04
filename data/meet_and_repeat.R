@@ -32,8 +32,8 @@ RATS$Group <- factor(RATS$Group)
 #convert the data sets to long form & and add week variable to BPRS and time variable to RATS
 BPRSL <-  BPRS %>% gather(key = weeks, value = bprs, -treatment, -subject)
 BPRSL <-  BPRSL %>% mutate(week = as.integer(substr(weeks,5,5)))
-RATSL <-  RATS %>% gather(key = WD, value = rats, -ID, -Group)
-RATSL <-  RATSL %>% mutate(time = as.integer(substr(WD,3,3)))
+RATSL <-  RATS %>% gather(key = WD, value = Weight, -ID, -Group)
+RATSL <-  RATSL %>% mutate(time = as.integer(substr(WD,3,4)))
 
 #check the data now, variable names, data content and structure, summaries
 glimpse(BPRSL)
