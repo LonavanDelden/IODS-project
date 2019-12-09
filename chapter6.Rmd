@@ -1,5 +1,13 @@
 # 6. Analysis of longitudinal data
 
+This is the summary of all findings on the RATS data analysis:
+
+The main difference between the data sets is that BPRS has two variables (after factoring) while RATS has three. This makes swopping the data sets a little bit more complicated. Well...
+
+The RATS data are grouping very closely in Group 1 and 3 but straying a little in Group 2. This is also nicely reflected in the summary graph, where the standard error is noticeable bigger in Group 2. It can be already guessed from the summary graph, that Group 1 is significantly different to Group 2 and 3 because the standard errors and therefore the 95% confidence interval (which is twice the standard error) would not overlap. However, if 2 and 3 are significantly different needs to be determined with an ANOVA to be sure as they are quite close together in the summary graph.
+
+Before the ANOVA, it should be checked if the data are already in the most representative way or if there are outliers that can be eliminated. After checking on that in the RATS data, it becomes obvious that each group has one outlier that can be excluded from the data set. After that the boxplot already highlights, that now all three groups will most likely be significanlty different from each other as the standard error has decreased substantially. The ANOVA confirms the findings.
+
 - Load libraries and data and check them out
 
 ```{r BPRS+RATS, echo=TRUE, results='markup', message=FALSE, warning=FALSE}
@@ -88,6 +96,12 @@ RATS8S2 <- RATS8S %>%
 #anova(fit)
 ```
 
+
+This is the summary of all findings on the BPRS data analysis:
+
+Using a linear mixed effect model on a data set with only two variables is a little overkill but lets follow the exercise. Well, looking into different mixing factors, the subjects always stay significantly different to each other (indicated by the *** below). However, it is noticeable that the standard error, t-value and df can change substantially when canging the mixing effect.
+
+
 - Linear Mixed Effects Models (Chapter 9, MABS4IODS) on BPRS data set
 
 ```{r LMEM, echo=TRUE, results='markup', message=FALSE, warning=FALSE}
@@ -105,6 +119,11 @@ anova(BPRS_ref2, BPRS_ref1)
 ```
 
 ```{r plots, echo=TRUE, results='markup', message=FALSE, warning=FALSE}
+#ggplot(BPRS, aes(x = week, y = bprs, group = treatment)) +
+  #geom_line(aes(linetype = Group)) +
+  #scale_x_continuous(name = "Week", breaks = seq(0, 60, 20)) +
+  #scale_y_continuous(name = "bprs") +
+  #theme(legend.position = "top")
 Fitted1 <- fitted(BPRS_ref1)
 BPRS <- BPRS %>%
   mutate(Fitted1)
