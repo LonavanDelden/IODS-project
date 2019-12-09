@@ -90,8 +90,13 @@ ggplot(RATS8S1, aes(x = Group, y = mean)) +
 - ANOVA (no t-test because groups n > 2)
 
 ```{r ANOVA, echo=TRUE, results='markup', message=FALSE, warning=FALSE}
-RATS8S2 <- RATS8S %>%
-  mutate(baseline = RATS$WD1)
+baseline <- RATS$WD1
+RATS8S2 <- RATS8S1%>%
+  mutate(baseline)
+head(RATS)
+head(RATS8S)
+head(RATS8S1)
+head(RATS8S2)
 #fit <- lm(mean ~ baseline + Group, data = RATS8S2)
 #anova(fit)
 ```
@@ -124,7 +129,7 @@ anova(BPRS_ref2, BPRS_ref1)
   #scale_x_continuous(name = "Week", breaks = seq(0, 60, 20)) +
   #scale_y_continuous(name = "bprs") +
   #theme(legend.position = "top")
-Fitted1 <- fitted(BPRS_ref1)
+Fitted1 <- fitted(BPRS_ref2)
 BPRS <- BPRS %>%
   mutate(Fitted1)
 #ggplot(BPRS, aes(x = week, y = Fitted1, group = treatment)) +
