@@ -39,4 +39,110 @@ Scree plot with Eigenvalues, when Eigenvalue is higher than 1, gives the appropr
 
 - During chapter 6:
 
+swoped data sets
+
+Factoring, standardizing and plotting (Chapter 8, MABS4IODS) on RATS data set
+
+```{r plotting, echo=TRUE, results='markup', message=FALSE, warning=FALSE}
+BPRS$treatment <- factor(BPRS$treatment)
+BPRS$subject <- factor(BPRS$subject)
+head(BPRS)
+BPRS <- BPRS %>%
+  group_by(week) %>%
+  mutate(stdbprs = (bprs - mean(bprs))/sd(bprs)) %>%
+  ungroup()
+head(BPRS)
+ggplot(BPRS, aes(x = week, y = bprs, linetype = subject)) +
+  geom_line() +
+  scale_linetype_manual(values = rep(1:10, times=4)) +
+  facet_grid(. ~ treatment, labeller = label_both) +
+  theme(legend.position = "none") + 
+  scale_y_continuous(limits = c(min(BPRS$bprs), max(BPRS$bprs)))
+```
+
+- Summary graphs
+
+```{r summary, echo=TRUE, results='markup', message=FALSE, warning=FALSE}
+n1 <- BPRS$week %>% unique() %>% length()
+BPRSS <- BPRS %>%
+  group_by(treatment, week) %>%
+  summarise( mean = mean(bprs), se = sd(bprs)/sqrt(n1) ) %>%
+  ungroup()
+glimpse(BPRSS)
+ggplot(BPRSS, aes(x = week, y = mean, linetype = treatment, shape = treatment)) +
+  geom_line() +
+  scale_linetype_manual(values = c(1,2)) +
+  geom_point(size=3) +
+  scale_shape_manual(values = c(1,2)) +
+  geom_errorbar(aes(ymin = mean - se, ymax = mean + se, linetype="1"), width=0.3) +
+  theme(legend.position = c(0.8,0.8)) +
+  scale_y_continuous(name = "mean(bprs) +/- se(bprs)")
+```
+
+- Outliers
+
+```{r outliers, echo=FALSE, results='markup', message=FALSE, warning=FALSE}
+BPRS8S <- BPRS %>%
+  filter(week > 0) %>%
+  group_by(treatment, subject) %>%
+  summarise( mean=mean(bprs) ) %>%
+  ungroup()
+glimpse(BPRS8S)
+ggplot(BPRS8S, aes(x = treatment, y = mean)) +
+  geom_boxplot() +
+  stat_summary(fun.y = "mean", geom = "point", shape=23, size=4, fill = "white") +
+  scale_y_continuous(name = "mean(bprs), weeks 1-8")
+BPRS8S1 <- BPRS8S %>% 
+  filter(mean < 60)
+glimpse(BPRS8S1)
+ggplot(BPRS8S1, aes(x = treatment, y = mean)) +
+  geom_boxplot() +
+  stat_summary(fun.y = "mean", geom = "point", shape=23, size=4, fill = "white") +
+  scale_y_continuous(name = "mean(bprs), weeks 1-8")
+```
+
+```{r t-test, echo=TRUE, results='markup', message=FALSE, warning=FALSE}
+t.test(mean ~ treatment, data = BPRS8S1, var.equal = TRUE)
+```
+
+
+```{r ANOVA, echo=TRUE, results='markup', message=FALSE, warning=FALSE}
+BPRS8S2 <- BPRS8S %>%
+  mutate(baseline = BPRS$week0)
+head(BPRS8S2)
+fit <- lm(mean ~ baseline + treatment, data = BPRS8S2)
+anova(fit)
+```
+
+- Linear Mixed Effects Models (Chapter 9, MABS4IODS) on BPRS data set
+
+```{r LMEM, echo=TRUE, results='markup', message=FALSE, warning=FALSE}
+RATS_re <- lm(Weight ~ time + Group, data = RATS)
+RATS_ref <- lmer(Weight ~ time + Group + (1 | ID), data = RATS, REML = FALSE)
+RATS_ref1 <- lmer(Weight ~ time + Group + (time | ID), data = RATS, REML = FALSE)
+RATS_ref2 <- lmer(Weight ~ time + Group + (time | ID) + (time * Group), data = RATS, REML = FALSE)
+summary(RATS_re)
+summary(RATS_ref)
+summary(RATS_ref1)
+summary(RATS_ref2)
+anova(RATS_ref1, RATS_ref)
+anova(RATS_ref2, RATS_ref1)
+```
+
+```{r plots, echo=TRUE, results='markup', message=FALSE, warning=FALSE}
+ggplot(RATSL, aes(x = Time, y = Weight, group = ID)) +
+  geom_line(aes(linetype = Group)) +
+  scale_x_continuous(name = "Time (days)", breaks = seq(0, 60, 20)) +
+  scale_y_continuous(name = "Observed weight (grams)") +
+  theme(legend.position = "top")
+Fitted <- fitted(RATS_ref2)
+RATSL <- RATSL %>%
+  mutate(Fitted)
+ggplot(RATSL, aes(x = Time, y = Fitted, group = ID)) +
+  geom_line(aes(linetype = Group)) +
+  scale_x_continuous(name = "Time (days)", breaks = seq(0, 60, 20)) +
+  scale_y_continuous(name = "Fitted weight (grams)") +
+  theme(legend.position = "top")
+```
+
 
